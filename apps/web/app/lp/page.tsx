@@ -14,8 +14,14 @@ import { useConfirmDialogStore } from "@/store/confirmDialog";
 import { PoolClient, type SimulationResult } from "@clearledger/sdk";
 import { Address, nativeToScVal } from "@stellar/stellar-sdk";
 import { formatAmount } from "@/lib/assets";
+import { ExternalLink } from "lucide-react";
 
 const poolContractID = process.env.NEXT_PUBLIC_POOL_CONTRACT_ID || "";
+const explorerNetwork = ["mainnet", "public"].includes(
+  (process.env.NEXT_PUBLIC_STELLAR_NETWORK || "testnet").toLowerCase(),
+)
+  ? "public"
+  : "testnet";
 const STROOPS_PER_UNIT = 10_000_000;
 
 type StatsWithSharePrice = {
@@ -232,9 +238,22 @@ export default function LPDashboard() {
                 <span className="text-xs font-bold uppercase tracking-wider text-white">
                   Active LP Position
                 </span>
-                <span className="text-[10px] text-slate-500">
-                  {position?.depositCount ?? 0} deposits
-                </span>
+                <div className="flex items-center gap-3">
+                  <span className="text-[10px] text-slate-500">
+                    {position?.depositCount ?? 0} deposits
+                  </span>
+                  {poolContractID && (
+                    <a
+                      href={`https://stellar.expert/explorer/${explorerNetwork}/contract/${poolContractID}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[10px] text-primary hover:underline"
+                      aria-label="View LP share token contract on Stellar Expert"
+                    >
+                      Contract <ExternalLink className="h-3 w-3" aria-hidden="true" />
+                    </a>
+                  )}
+                </div>
               </div>
               <div className="grid gap-4 sm:grid-cols-3">
                 <Stat
